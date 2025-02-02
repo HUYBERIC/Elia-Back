@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "setup": "cp .env.example .env && npm install"
+    "setup": "copy .env.example .env && npm install"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
