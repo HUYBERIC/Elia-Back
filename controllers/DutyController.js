@@ -13,8 +13,13 @@ const getDuties = async (req, res) => {
   
   const addDuty = async (req, res) => {
     try{
-      const duty=  new Duty(req.body);
+      console.log(req.body);
+
+      const { title, startTime, endTime } = req.body;
+      const duty = new Duty({ title, start, end });
      await duty.save();
+     console.log(duty);
+     
     res.status(200).json(duty);
     } catch (error) {
       res.status(500).send("Erreur lors de l'ajout de la garde");
