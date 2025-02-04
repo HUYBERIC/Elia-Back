@@ -3,10 +3,15 @@ const Duty= require("../models/DutyShift");
 
 const getDuties = async (req, res) => {
     try{
-        const duty = await Duty.find();
+        const duties = await Duty.find();
      
-        res.status(200).json(duty);
-    } catch (error) {
+        // Convert the date format to be compatible with FullCalendar
+        res.status(200).json(duties.map(duty => ({
+          id: duty._id,
+          title: duty.title || "Sans titre",
+          start: duty.startTime, // ✅ Correction ici
+          end: duty.endTime // ✅ Correction ici
+      })));    } catch (error) {
         res.status(500).send("Erreur lors de la récupération des gardes");
     }
   };
@@ -16,7 +21,7 @@ const getDuties = async (req, res) => {
       console.log(req.body);
 
       const { title, startTime, endTime } = req.body;
-      const duty = new Duty({ title, start, end });
+      const duty = new Duty({ title, startTime, endTime });
      await duty.save();
      console.log(duty);
      
