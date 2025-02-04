@@ -24,6 +24,7 @@ app.listen(PORT, () => {
 // Routes import
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoutes");
-
+const DutyRoutes = require("./routes/DutyRoutes");
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/duties", DutyRoutes);
