@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const connectDB = require("./config/db"); // Importation de la connexion MongoDB
+const connectDB = require("./config/db"); // Import MongoDB connection
 
 const app = express();
 const PORT = process.env.PORT || 5000;
