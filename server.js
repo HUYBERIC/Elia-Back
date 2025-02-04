@@ -1,3 +1,8 @@
+const cookieParser = require("cookie-parser");
+const cookie = require("cookie");
+const verifyToken = require("./middleware/authJWT");
+const cors = require("cors");
+
 require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/db"); // Import MongoDB connection
@@ -10,6 +15,8 @@ connectDB();
 
 // Middleware JSON
 app.use(express.json());
+app.use(cookieParser());
+app.use(cors({ credentials: true , origin: "*" }));
 
 // Route test
 app.get("/", (req, res) => {
