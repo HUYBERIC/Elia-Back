@@ -7,12 +7,12 @@ const registerUser = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
     if (!email || !password) {
-      return res.status(401).json({ error: "no password or email provided" });
+      return res.status(401).json({ error: "No password or email provided" });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "emain already in use" });
+      return res.status(400).json({ message: "Email already used" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -24,7 +24,11 @@ const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
     });
-    user.save();
+    console.log("💾 Saving user:", user);
+
+    await user.save();
+
+    console.log("✅ User saved successfully!");
 
     const token = jwt.sign(
       {
@@ -43,6 +47,7 @@ const registerUser = async (req, res) => {
       .status(200)
       .json({ message: " register Successful", success: true, token: token });
   } catch (error) {
+    console.error("❌ Registration error:", error);
     res
       .status(500)
       .json({ err: "erreur lors de la creation de profile", error });
