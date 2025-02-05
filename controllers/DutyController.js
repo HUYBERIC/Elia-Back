@@ -41,16 +41,18 @@ const getDuties = async (req, res) => {
     res.status(500).send("Erreur lors de la modification de la garde");
   }}
   
-  const deleteDuty =async (req, res) => {
+  const deleteDuty = async (req, res) => {
     try {
-      await Duty.findByIdAndDelete(req.params.id);
-      res.send(`Suppression de la garde avec l'ID: ${req.params.id}`);
-      res.json(duty);
+        const duty = await Duty.findByIdAndDelete(req.params.id);
+
+        if (!duty) {
+            return res.status(404).json({ message: "Garde non trouvée" });
+        }
+
+        res.json({ message: `Suppression réussie`, duty });
     } catch (error) {
-      res.status(500).send("Erreur lors de la suppression de la garde");
-      
+        res.status(500).json({ message: "Erreur lors de la suppression de la garde", error });
     }
-   
-  };
+};
   
   module.exports = { getDuties, addDuty, updateDuty, deleteDuty };
