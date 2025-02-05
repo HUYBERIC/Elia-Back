@@ -4,7 +4,8 @@ const serviceCenter = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   description: { type: String },
   location: { type: String },
-  users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] // References users
+  planning: [{ type: mongoose.Schema.Types.ObjectId, ref: "DutyShift" }],
+  users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
 });
 
-module.exports = mongoose.model("Zone", serviceCenter);
+module.exports = mongoose.model("ServiceCenter", serviceCenter);

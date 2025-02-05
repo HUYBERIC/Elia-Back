@@ -2,6 +2,8 @@ const cookieParser = require("cookie-parser");
 const cookie = require("cookie");
 const verifyToken = require("./middleware/authJWT");
 const cors = require("cors");
+const ServiceCenter = require("./models/ServiceCenter");
+
 
 require("dotenv").config();
 const express = require("express");
@@ -21,6 +23,27 @@ app.use(cors({ credentials: true , origin: "http://localhost:5173" }));
 // Route test
 app.get("/", (req, res) => {
   res.send("🚀 Express server is on!");
+});
+
+app.get("/testSC",verifyToken, async (req,res) => {
+  const userid = req.user.id;
+  try {
+    const { name, description, location } = req.body;
+
+    // Create a new ServiceCenter document
+    const newServiceCenter = new ServiceCenter({
+      name,
+      description,
+      location,
+      users:[userid], // Must be an array of ObjectIds
+    });
+
+    // Save to MongoDB
+    await newServiceCenter.save();
+    res.status(201).json(newServiceCenter);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 // Launch server
