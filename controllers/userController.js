@@ -83,7 +83,7 @@ const loginUser = async (req, res) => {
     );
 
     res.cookie("token", token, {
-      httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
+      httpOnly: false, // Prevent client-side JavaScript from accessing the cookie
       secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
       sameSite: "strict", // Protect against CSRF attacks
     });
@@ -110,9 +110,11 @@ const getUsers = async (req, res) => {
 };
 
 const getUsersById = async (req, res) => {
+  
   try {
     const id = req.params.id;
-    const user = User.find({ _id: id });
+    const user = await User.findOne({ _id: id });
+    console.log(user);
 
     res.status(200).json(user);
   } catch (error) {
