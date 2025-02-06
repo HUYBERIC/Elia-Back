@@ -5,12 +5,13 @@ const {
   loginUser,
   getUsers,
   getUsersById,
+  updateUserById
 } = require("../controllers/userController");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/", getUsers);
 router.get("/:id", getUsersById);
-router.put("/:id", getUsersById);
+router.put("/:id", updateUserById);
 
 module.exports = router;

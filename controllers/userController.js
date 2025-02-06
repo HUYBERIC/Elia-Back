@@ -110,11 +110,9 @@ const getUsers = async (req, res) => {
 };
 
 const getUsersById = async (req, res) => {
-  
   try {
     const id = req.params.id;
     const user = await User.findOne({ _id: id });
-    console.log(user);
 
     res.status(200).json(user);
   } catch (error) {
@@ -127,7 +125,9 @@ const getUsersById = async (req, res) => {
 const updateUserById = async (req, res) => {
   try {
     const id = req.params.id;
-    const user = User.updateOne({ _id: id }, req.body);
+    const user = await User.updateOne({ _id: id }, req.body);
+
+    console.log(req.body);
 
     res.status(200).json(user);
   } catch (error) {

@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
   receiverId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
-    required: true,
   },
   shift: { type: mongoose.Schema.Types.ObjectId, ref: "DutyShift" },
   status: { type: String, enum: ["pending", "approved", "declined"] },
