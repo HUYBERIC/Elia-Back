@@ -7,10 +7,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   phone:{type:Number},
   serviceCenter: { 
-    serviceCenter: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCenter" },
-    name: { type: String, required: true },
-    description: { type: String },
-    location: { type: String }
+    serviceCenterId: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCenter" },
+    serviceCenter: { type: String }
   }
 }, { timestamps: true });
 
