@@ -4,12 +4,12 @@ const request = new mongoose.Schema({
   message: { type: String },
   requesterId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
     required: true,
   },
   receiverId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
   },
   emergencyLevel: { type: String, enum: ["low", "medium", "high"], required: true },
   askedStartTime:{type:Date},

@@ -43,9 +43,13 @@ const createRequest = async (req, res) => {
 // ✅ Récupérer toutes les requêtes
 const getRequests = async (req, res) => {
   try {
-    const requests = await Requests.find(); // Correction : Utilisation de `Requests` au lieu de `Request`
+    const requests = await Requests.find().populate("requesterId"); // Correction : Utilisation de `Requests` au lieu de `Request`
+    console.log(requests);
+
     res.json(requests);
   } catch (error) {
+    console.log(error);
+
     res.status(400).json({ error: error.message });
   }
 };
@@ -70,4 +74,9 @@ const getPendingRequests = async (req, res) => {
   }
 };
 
-module.exports = { createRequest, getRequests, getAcceptStatus, getPendingRequests };
+module.exports = {
+  createRequest,
+  getRequests,
+  getAcceptStatus,
+  getPendingRequests,
+};
