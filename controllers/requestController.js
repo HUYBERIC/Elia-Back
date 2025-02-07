@@ -4,7 +4,7 @@ const Requests = require("../models/Requests"); // Assure-toi que le nom du mod�
 // ✅ Créer une nouvelle requête
 const createRequest = async (req, res) => {
   try {
-    const { startDate, endDate } = req.body;
+    const { emergencyLevel, startDate, endDate } = req.body;
     console.log(req.body);
 
     const startTime = new Date(`${startDate}:00+00:00`);
@@ -24,6 +24,7 @@ const createRequest = async (req, res) => {
       requesterId,
       shiftToReplace: shift,
       status: "pending",
+      emergencyLevel,
       askedStartTime: startTime,
       askedEndTime: endTime,
       createdAt: new Date(Date.now() + 3600000),

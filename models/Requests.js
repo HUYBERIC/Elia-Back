@@ -11,6 +11,7 @@ const request = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
+  emergencyLevel: { type: String, enum: ["low", "medium", "high"], required: true },
   askedStartTime:{type:Date},
   askedEndTime:{type:Date},
   shift: { type: mongoose.Schema.Types.ObjectId, ref: "DutyShift" },
