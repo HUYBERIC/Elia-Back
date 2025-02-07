@@ -40,3 +40,4 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/duties", DutyRoutes);
 app.use("/api/utils", utilsRoutes);
 app.use("/api/requests", requestRoutes);
+app.use("/api/logOut", userRoutes);

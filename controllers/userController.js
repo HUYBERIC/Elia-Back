@@ -109,6 +109,17 @@ const getUsers = async (req, res) => {
   }
 };
 
+
+
+const logOutUser = async (req, res) => {
+  try {
+    res.clearCookie("token"); // Supprime le cookie JWT
+    res.status(200).json({ message: "Déconnexion réussie" });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la déconnexion", error });
+  }
+};
+
 const getUsersById = async (req, res) => {
   try {
     const id = req.params.id;
@@ -143,4 +154,5 @@ module.exports = {
   getUsers,
   getUsersById,
   updateUserById,
+  logOutUser,
 };
