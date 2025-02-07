@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "setup": "copy .env.example .env && npm install"
+    "setup": "copy .env.example .env && npm install",
+    "start": "nodemon server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
