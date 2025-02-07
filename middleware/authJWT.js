@@ -3,10 +3,14 @@ const jwt = require("jsonwebtoken");
 const verifyToken = (req, res, next) => {
   const token = req.cookies.token; // Extract JWT from cookies
 
+  console.log(req.cookies);
+
   console.log("Token extrait des cookies:", token);
 
   if (!token) {
-    return res.status(403).json({ message: "Un token est requis pour accéder à cette ressource." });
+    return res
+      .status(403)
+      .json({ message: "Un token est requis pour accéder à cette ressource." });
   }
 
   try {

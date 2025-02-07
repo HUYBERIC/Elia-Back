@@ -1,6 +1,5 @@
 const cookieParser = require("cookie-parser");
 const cookie = require("cookie");
-const verifyToken = require("./middleware/authJWT");
 const cors = require("cors");
 
 
@@ -34,7 +33,10 @@ const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const DutyRoutes = require("./routes/DutyRoutes");
 const utilsRoutes = require("./routes/utilsRoute");
+const requestRoutes = require("./routes/requestsRoute");
+
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/duties", DutyRoutes);
 app.use("/api/utils", utilsRoutes);
+app.use("/api/switch-request", requestRoutes);
