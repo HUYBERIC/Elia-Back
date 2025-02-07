@@ -7,8 +7,8 @@ const createRequest = async (req, res) => {
     const { startDate, endDate } = req.body;
     console.log(req.body);
 
-    const startTime = new Date(`${startDate}:00+02:00`);
-    const endTime = new Date(`${endDate}:00+02:00`);
+    const startTime = new Date(`${startDate}:00+00:00`);
+    const endTime = new Date(`${endDate}:00+00:00`);
 
     console.log(startTime);
     console.log(endTime);
@@ -26,8 +26,8 @@ const createRequest = async (req, res) => {
       status: "pending",
       askedStartTime: startTime,
       askedEndTime: endTime,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: new Date(Date.now() + 3600000),
+      updatedAt: new Date(Date.now() + 3600000),
     });
 
     await newRequest.save();
