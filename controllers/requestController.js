@@ -1,6 +1,7 @@
 const DutyShift = require("../models/DutyShift");
-const Requests = require("../models/Requests");
+const Requests = require("../models/Requests"); // Assure-toi que le nom du modèle est correct
 
+// ✅ Créer une nouvelle requête
 const createRequest = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
@@ -19,7 +20,7 @@ const createRequest = async (req, res) => {
       endTime: { $gte: new Date(endTime) },
     });
 
-    const newRequest = await new Requests({
+    const newRequest = new Requests({
       requesterId,
       shiftToReplace: shift,
       status: "pending",
@@ -34,21 +35,38 @@ const createRequest = async (req, res) => {
     res.json(newRequest);
   } catch (error) {
     console.log(error);
-
-    res.json({ error });
+    res.status(400).json({ error: error.message });
   }
 };
 
+// ✅ Récupérer toutes les requêtes
 const getRequests = async (req, res) => {
   try {
-    const requests = await Request.find();
-
+    const requests = await Requests.find(); // Correction : Utilisation de `Requests` au lieu de `Request`
     res.json(requests);
   } catch (error) {
-    res.status(400).json({
-      error,
-    });
+    res.status(400).json({ error: error.message });
   }
 };
 
-module.exports = { createRequest, getRequests };
+// ✅ Récupérer uniquement les requêtes acceptées
+const getAcceptStatus = async (req, res) => {
+  try {
+    const requests = await Requests.find({ status: "accepted" });
+    res.json(requests);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// ✅ Récupérer uniquement les requêtes en attente
+const getPendingRequests = async (req, res) => {
+  try {
+    const requests = await Requests.find({ status: "pending" });
+    res.json(requests);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = { createRequest, getRequests, getAcceptStatus, getPendingRequests };

@@ -39,4 +39,4 @@ app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/duties", DutyRoutes);
 app.use("/api/utils", utilsRoutes);
-app.use("/api/switch-request", requestRoutes);
+app.use("/api/requests", requestRoutes);
