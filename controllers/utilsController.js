@@ -53,7 +53,7 @@ const createPlanning = async (req, res) => {
         const shift = new DutyShift({
           title: `Shift for ${users[i].firstName} ${users[i].lastName} (Week ${i})`,
           userId: users[i]._id,
-          zoneId: serviceCenterId, // Assuming serviceCenterId as zoneId
+          serviceCenter: serviceCenterId, // Assuming serviceCenterId as zoneId
           startTime: new Date(currentStartDate),
           endTime: new Date(currentEndDate),
           totalTime: 7 * 24 // Total hours in a week

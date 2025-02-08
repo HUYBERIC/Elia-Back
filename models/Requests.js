@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const request = new mongoose.Schema({
-  message: { type: String },
   requesterId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -16,8 +15,6 @@ const request = new mongoose.Schema({
   askedEndTime:{type:Date},
   shift: { type: mongoose.Schema.Types.ObjectId, ref: "DutyShift" },
   status: { type: String, enum: ["pending", "approved", "declined"] },
-  createdAt: { type: Date },
-  updatedAt: { type: Date },
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Requests", request);

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { createRequest, getRequests, getAcceptStatus, getPendingRequests } = require("../controllers/requestController");
+const { createRequest, getRequests, getAcceptStatus,acceptRequest, getPendingRequests } = require("../controllers/requestController");
 const verifyToken = require("../middleware/authJWT");
 
 router.post("/", verifyToken, createRequest);
@@ -13,5 +13,7 @@ router.get("/accepted", getAcceptStatus);
 
 // Route pour récupérer les requêtes en attente
 router.get("/pending", getPendingRequests);
+
+router.put("/accept/:id", verifyToken, acceptRequest)
 
 module.exports = router;

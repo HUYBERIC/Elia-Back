@@ -6,7 +6,7 @@ const DutyShiftSchema = new mongoose.Schema({
   ServiceCenter: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCenter" },
   startTime: {type:Date},
   endTime: {type:Date},
-  replacements: { type: mongoose.Schema.Types.ObjectId, ref: "replacements" },
+  replacements: [{ type: mongoose.Schema.Types.ObjectId, ref: "replacements" }],
   totalTime : Number
 });
 
