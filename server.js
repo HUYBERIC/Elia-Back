@@ -4,7 +4,7 @@ const cors = require("cors");
 const allowedOrigins = [
   "http://localhost:5173",  // Local front-end
   "https://elia-back.onrender.com", // Render link
-  "https://eduty.vercel.app/" // Vercel link
+  "https://eduty.vercel.app" // Vercel link
 ];
 
 
@@ -23,12 +23,18 @@ connectDB();
 // Middleware JSON
 app.use(express.json());
 app.use(cookieParser());
+
 const corsOptions = {
-  origin: "*",  // ✅ Accepte toutes les origines temporairement
-  credentials: true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Permet l'envoi des cookies et des headers sécurisés
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 200
+  allowedHeaders: ["Content-Type", "Authorization"]
 };
 
 app.use((req, res, next) => {
@@ -38,13 +44,7 @@ app.use((req, res, next) => {
 
 app.use(cors(corsOptions));
 
-app.options("*", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  return res.sendStatus(200);
-});
+app.options("*", cors(corsOptions));
 
 // Route test
 app.get("/", (req, res) => {
