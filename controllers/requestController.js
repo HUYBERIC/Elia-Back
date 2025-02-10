@@ -88,52 +88,58 @@ const getPendingRequests = async (req, res) => {
 
 const acceptRequest = async (req, res) => {
   try {
-    const { requestId } = req.body;
-    const receiverId = req.user.id;
-
-    const request = await Requests.findById(requestId);
+    const { id } = req.params; // Récupération de l'ID de la requête via les paramètres
+    const receiverId = req.user.id; // L'utilisateur qui accepte la requête
+    console.log("Request canceled: User tried to replace themselves.");
+    const request = await Requests.findById(id);
     if (!request) {
       return res.status(404).json({ error: "Request not found" });
     }
 
-    console.log(requestId);
-    console.log(request);
-    console.log(receiverId);
+    // Vérifier si l'utilisateur tente de se remplacer lui-même
+    if (request.requesterId.toString() === receiverId) {
+      // Annuler la demande de remplacement
+      await Requests.findByIdAndDelete(id);
+      console.log("Request canceled: User tried to replace themselves.");
+      return res.json({ message: "Replacement request canceled as the user is the same." });
+    }
 
     request.status = "approved";
     request.receiverId = receiverId;
     await request.save();
 
+    // Trouver le shift correspondant
     const shift = await DutyShift.findById(request.shift);
     if (!shift) {
+      
       return res.status(404).json({ error: "Shift not found" });
     }
 
     if (!shift.replacements) shift.replacements = [];
 
+    // Créer un nouvel enregistrement de remplacement
     const newReplacement = new Replacement({
       replacingUserId: receiverId,
       serviceCenter: shift.ServiceCenter,
       startTime: request.askedStartTime,
       endTime: request.askedEndTime,
-      status: request.status,
-    })
+      status: "approved",
+    });
 
-    await newReplacement.save()
+    await newReplacement.save();
 
-    shift.replacements.push(
-      newReplacement
-    );
-
-    console.log(shift);
-
+    shift.replacements.push(newReplacement);
     await shift.save();
 
-    res.json(request);
+    // Supprimer la requête acceptée pour ne plus l'afficher dans la liste
+    await Requests.findByIdAndDelete(id);
+
+    res.json({ message: "Request accepted and moved to calendar", shift });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 module.exports = {
   createRequest,
