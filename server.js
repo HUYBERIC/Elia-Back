@@ -42,6 +42,7 @@ const messageRoutes = require("./routes/messageRoutes");
 const DutyRoutes = require("./routes/DutyRoutes");
 const utilsRoutes = require("./routes/utilsRoute");
 const requestRoutes = require("./routes/requestsRoute");
+const replacementsRoutes = require("./routes/replacementsRoute");
 const notFoundRoute = require("./routes/notFoundRoute");
 
 app.use("/api/users", userRoutes);
@@ -49,4 +50,5 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/duties", DutyRoutes);
 app.use("/api/utils", utilsRoutes);
 app.use("/api/requests", requestRoutes);
+app.use("/api/replacements", replacementsRoutes);
 app.use("*", notFoundRoute);

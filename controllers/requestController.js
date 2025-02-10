@@ -1,6 +1,7 @@
 const DutyShift = require("../models/DutyShift");
 const Requests = require("../models/Requests"); // Assure-toi que le nom du modèle est correct
 const Replacement = require("../models/Replacements"); // Assure-toi que le nom du modèle est correct
+const Replacements = require("../models/Replacements");
 
 // ✅ Créer une nouvelle requête
 const createRequest = async (req, res) => {
@@ -119,14 +120,19 @@ const acceptRequest = async (req, res) => {
 
     // Créer un nouvel enregistrement de remplacement
     const newReplacement = new Replacement({
+      replacedUserId: request.requesterId,
       replacingUserId: receiverId,
       serviceCenter: shift.ServiceCenter,
       startTime: request.askedStartTime,
       endTime: request.askedEndTime,
-      status: "approved",
+      status: request.status,
     });
 
     await newReplacement.save();
+
+    shift.replacements.push(newReplacement);
+
+    console.log(shift);
 
     shift.replacements.push(newReplacement);
     await shift.save();
@@ -140,6 +146,18 @@ const acceptRequest = async (req, res) => {
   }
 };
 
+const getReplacements = async (req, res) => {
+  try {
+    const requests = await Replacements.find().populate("replacedUserId replacingUserId");
+    console.log(requests);
+    
+    res.json(requests);
+  } catch (error) {
+    console.log(error);
+
+    res.status(400).json({ error: error.message });
+  }
+};
 
 module.exports = {
   createRequest,
@@ -147,4 +165,5 @@ module.exports = {
   getAcceptStatus,
   getPendingRequests,
   acceptRequest,
+  getReplacements,
 };
