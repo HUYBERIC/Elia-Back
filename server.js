@@ -24,22 +24,27 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: "*",  // ✅ Accepte toutes les origines temporairement
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 200
 };
 
+app.use((req, res, next) => {
+  console.log("🔍 Incoming request from:", req.headers.origin);
+  next();
+});
+
 app.use(cors(corsOptions));
 
-app.options("*", cors(corsOptions)); // Preflight request
+app.options("*", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  return res.sendStatus(200);
+});
 
 // Route test
 app.get("/", (req, res) => {
