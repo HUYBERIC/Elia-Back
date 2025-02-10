@@ -18,6 +18,14 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ credentials: true , origin: "http://localhost:5173" }));
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
+
 // Route test
 app.get("/", (req, res) => {
   res.send("🚀 Express server is on!");
@@ -34,9 +42,11 @@ const messageRoutes = require("./routes/messageRoutes");
 const DutyRoutes = require("./routes/DutyRoutes");
 const utilsRoutes = require("./routes/utilsRoute");
 const requestRoutes = require("./routes/requestsRoute");
+const notFoundRoute = require("./routes/notFoundRoute");
 
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/duties", DutyRoutes);
 app.use("/api/utils", utilsRoutes);
 app.use("/api/requests", requestRoutes);
+app.use("*", notFoundRoute);
