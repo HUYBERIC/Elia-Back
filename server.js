@@ -1,6 +1,11 @@
 const cookieParser = require("cookie-parser");
 const cookie = require("cookie");
 const cors = require("cors");
+const allowedOrigins = [
+  "http://localhost:5173",  // Local front-end
+  "https://elia-back.onrender.com", // Render link
+  "https://eduty.vercel.app/" // Vercel link
+];
 
 
 require("dotenv").config();
@@ -18,7 +23,14 @@ connectDB();
 // Middleware JSON
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ credentials: true , origin: "http://localhost:5173" }));
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200 //
+}));
+
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
