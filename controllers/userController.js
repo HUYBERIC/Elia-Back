@@ -39,10 +39,8 @@ const registerUser = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
-      secure: true, // Only send over HTTPS in production
-      sameSite: "None", // Protect against CSRF attacks
-      path: "/", // Send the cookie on all requests
-      domain: ".onrender.com", // Send the cookie on all sub
+      secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+      sameSite: "strict",
     });
 
     res
@@ -87,16 +85,15 @@ const loginUser = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
       secure: true, // Only send over HTTPS in production
-      sameSite: "None", // Protect against CSRF attacks
-      path: "/", // Send the cookie on all requests
-      domain: ".onrender.com", // Send the cookie on all subdomains
+      sameSite: "false", // Protect against CSRF attacks
+      path: "/",
     });
 
     console.log("✅ Cookie envoyé:", res.getHeaders()["set-cookie"]);
 
     res
       .status(200)
-      .json({ message: " register Successful", success: true, token: token });
+      .json({ message: " login Successful", success: true, token: token });
   } catch (error) {
     res
       .status(500)
@@ -105,10 +102,27 @@ const loginUser = async (req, res) => {
 };
 
 const getUsers = async (req, res) => {
+  console.log("🍪 Cookies:")
+
   try {
     const users = await User.find();
 
     res.status(200).json(users);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la récupération des lobbies.", error });
+  }
+};
+
+const getToken = async (req, res) => {
+  console.log("🍪 Cookies:")
+  try {
+    console.log(req.user.id);
+    const user = req.user.id;
+
+    
+    res.status(200).json({test:"test"});
   } catch (error) {
     res
       .status(500)
@@ -162,4 +176,5 @@ module.exports = {
   getUsersById,
   updateUserById,
   logOutUser,
+  getToken
 };
