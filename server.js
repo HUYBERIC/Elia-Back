@@ -47,19 +47,6 @@ app.use((req, res, next) => {
 
 app.use(cors(corsOptions));
 
-app.use(
-  session({
-    secret: "process.env.",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      sameSite: "None", // Important pour les requêtes cross-origin en HTTPS
-      secure: true, // Obligatoire en HTTPS
-      httpOnly: true, // Empêche l'accès au cookie via JavaScript
-    },
-  })
-);
-
 app.options("*", cors(corsOptions));
 
 // Route test
