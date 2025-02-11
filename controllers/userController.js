@@ -40,7 +40,7 @@ const registerUser = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
       secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
-      sameSite: "none", // Protect against CSRF attacks
+      sameSite: "strict", // Protect against CSRF attacks
     });
 
     res
