@@ -54,10 +54,10 @@ app.get("/", (req, res) => {
   res.send("🚀 Express server is on!");
 });
 
-// Launch server
+/* // Launch server
 app.listen(PORT, () => {
   console.log(`🚀 Server launch on http://localhost:${PORT}`);
-});
+}); */
 
 // Routes import
 const userRoutes = require("./routes/userRoutes");
@@ -75,3 +75,6 @@ app.use("/api/utils", utilsRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/replacements", replacementsRoutes);
 app.use("*", notFoundRoute);
+
+// Export for vercel
+module.exports = app;
