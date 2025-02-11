@@ -2,7 +2,6 @@ const cookieParser = require("cookie-parser");
 const cookie = require("cookie");
 const cors = require("cors");
 
-
 require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/db"); // Import MongoDB connection
@@ -40,3 +39,5 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/duties", DutyRoutes);
 app.use("/api/utils", utilsRoutes);
 app.use("/api/requests", requestRoutes);
+app.use("/api/replacements", replacementsRoutes);
+app.use("*", notFoundRoute);

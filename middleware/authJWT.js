@@ -3,8 +3,6 @@ const jwt = require("jsonwebtoken");
 const verifyToken = (req, res, next) => {
   const token = req.cookies.token; // Extract JWT from cookies
 
-  console.log(req.cookies);
-
   console.log("Token extrait des cookies:", token);
 
   if (!token) {

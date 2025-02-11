@@ -83,10 +83,11 @@ const loginUser = async (req, res) => {
     );
 
     res.cookie("token", token, {
-      httpOnly: false, // Prevent client-side JavaScript from accessing the cookie
-      secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
-      sameSite: "strict", // Protect against CSRF attacks
+      httpOnly: true, // Empêche l'accès au cookie côté client (meilleur pour la sécurité)
+      secure: process.env.NODE_ENV === "production", // Doit être true uniquement en prod avec HTTPS
+      sameSite: "Lax", // Ou "None" si tu es sur un domaine différent
     });
+    
     res
       .status(200)
       .json({ message: " register Successful", success: true, token: token });
@@ -109,8 +110,6 @@ const getUsers = async (req, res) => {
   }
 };
 
-
-
 const logOutUser = async (req, res) => {
   try {
     res.clearCookie("token"); // Supprime le cookie JWT
@@ -120,6 +119,18 @@ const logOutUser = async (req, res) => {
   }
 };
 
+const getToken = async (req, res) => {
+  const id = req.user.id;
+  console.log(id);
+  try {
+
+    res.status(200).json(user);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la récupération des lobbies.", error });
+  }
+};
 const getUsersById = async (req, res) => {
   try {
     const id = req.params.id;
@@ -155,4 +166,5 @@ module.exports = {
   getUsersById,
   updateUserById,
   logOutUser,
+  getToken,
 };
