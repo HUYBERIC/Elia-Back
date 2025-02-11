@@ -62,8 +62,6 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ error: "no password or email provided" });
     }
 
-    console.log(req.body);
-
     const user = await User.findOne({ email });
     if (!user) {
       console.log("Utilisateur non trouvé");
@@ -81,6 +79,7 @@ const loginUser = async (req, res) => {
       { id: user._id, username: user.username, lobbies: user.lobbies },
       process.env.JWT_SECRET
     );
+    console.log(token);
 
     res.cookie("token", token, {
       httpOnly: true, // Empêche l'accès au cookie côté client (meilleur pour la sécurité)
