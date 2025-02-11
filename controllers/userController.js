@@ -40,7 +40,8 @@ const registerUser = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
       secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
-      sameSite: "strict", // Protect against CSRF attacks
+      sameSite: "None", // Protect against CSRF attacks
+      path: "/",
     });
 
     res
@@ -83,10 +84,14 @@ const loginUser = async (req, res) => {
     );
 
     res.cookie("token", token, {
-      httpOnly: false, // Prevent client-side JavaScript from accessing the cookie
+      httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
       secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
-      sameSite: "strict", // Protect against CSRF attacks
+      sameSite: "None", // Protect against CSRF attacks
+      path: "/", // Send the cookie on all requests
     });
+
+    console.log("✅ Cookie envoyé:", res.getHeaders()["set-cookie"]);
+
     res
       .status(200)
       .json({ message: " register Successful", success: true, token: token });
