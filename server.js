@@ -10,7 +10,6 @@ const allowedOrigins = [
 
 
 require("dotenv").config();
-console.log("✅ Loaded ENV:", process.env);
 
 const express = require("express");
 const connectDB = require("./config/db"); // Import MongoDB connection
@@ -55,10 +54,10 @@ app.get("/", (req, res) => {
   res.send("🚀 Express server is on!");
 });
 
-/* // Launch server
+// Launch server
 app.listen(PORT, () => {
   console.log(`🚀 Server launch on http://localhost:${PORT}`);
-}); */
+});
 
 // Routes import
 const userRoutes = require("./routes/userRoutes");
@@ -78,4 +77,4 @@ app.use("/api/replacements", replacementsRoutes);
 app.use("*", notFoundRoute);
 
 // Export for vercel
-module.exports = app;
+/* module.exports = app; */
