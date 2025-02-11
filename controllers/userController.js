@@ -41,7 +41,8 @@ const registerUser = async (req, res) => {
       httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
       secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
       sameSite: "None", // Protect against CSRF attacks
-      path: "/",
+      path: "/", // Send the cookie on all requests
+      domain: ".onrender.com", // Send the cookie on all sub
     });
 
     res
@@ -88,6 +89,7 @@ const loginUser = async (req, res) => {
       secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
       sameSite: "None", // Protect against CSRF attacks
       path: "/", // Send the cookie on all requests
+      domain: ".onrender.com", // Send the cookie on all subdomains
     });
 
     console.log("✅ Cookie envoyé:", res.getHeaders()["set-cookie"]);
