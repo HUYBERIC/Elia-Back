@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 
+// Dégager les trucs google
+
 const registerUser = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
