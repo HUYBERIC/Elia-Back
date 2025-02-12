@@ -1,6 +1,6 @@
 const DutyShift = require("../models/DutyShift");
-const Requests = require("../models/Requests"); // Assure-toi que le nom du modèle est correct
-const Replacement = require("../models/Replacements"); 
+const Requests = require("../models/Requests");
+const Replacement = require("../models/Replacements");
 
 // ✅ Créer une nouvelle requête
 const createRequest = async (req, res) => {
@@ -53,10 +53,18 @@ const createRequest = async (req, res) => {
   }
 };
 
-// ✅ Récupérer toutes les requêtes
+// ✅ Récupérer toutes les requêtes et supprimer celles qui sont dépassées
 const getRequests = async (req, res) => {
   try {
-    const requests = await Requests.find().populate("requesterId"); // Correction : Utilisation de `Requests` au lieu de `Request`
+    const now = new Date(); // Date actuelle pour comparer avec startTime
+
+    // Supprimer les requêtes "pending" dont la startTime est passée
+    await Requests.deleteMany({
+      status: "pending",      // Si le statut est toujours "pending"
+      askedStartTime: { $lt: now }, // Si la startTime est passée (moins que la date actuelle)
+    });
+
+    const requests = await Requests.find().populate("requesterId");
 
     res.json(requests);
   } catch (error) {
@@ -111,7 +119,6 @@ const acceptRequest = async (req, res) => {
     // Trouver le shift correspondant
     const shift = await DutyShift.findById(request.shift);
     if (!shift) {
-      
       return res.status(404).json({ error: "Shift not found" });
     }
 
@@ -144,7 +151,6 @@ const acceptRequest = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 
 module.exports = {
   createRequest,
