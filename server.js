@@ -9,7 +9,6 @@ const allowedOrigins = [
 
 
 require("dotenv").config();
-console.log("✅ Loaded ENV:", process.env);
 
 const express = require("express");
 const connectDB = require("./config/db"); // Import MongoDB connection
