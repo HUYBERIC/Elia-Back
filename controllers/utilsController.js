@@ -31,11 +31,14 @@ const createPlanning = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields." });
     }
 
+    console.log(serviceCenterId);
+    
+    
     const serviceCenter = await ServiceCenter.findById(serviceCenterId).populate("users");
     if (!serviceCenter) {
       return res.status(404).json({ message: "Service Center not found." });
     }
-
+    
     const users = serviceCenter.users;
     if (!users.length) {
       return res.status(400).json({ message: "No users found in the service center." });
@@ -44,12 +47,12 @@ const createPlanning = async (req, res) => {
     let shifts = [];
     let currentStartDate = new Date(startDate);
     currentStartDate.setHours(currentStartDate.getHours() - 1); // Add 1 hour for timezone offset
-
+    
     for (let cycle = 0; cycle < repeatWeeks; cycle++) { // Repeat for given weeks
       for (let i = 0; i < users.length; i++) {
         let currentEndDate = new Date(currentStartDate);
         currentEndDate.setDate(currentEndDate.getDate() + 7); // Add 7 days
-
+        
         const shift = new DutyShift({
           title: `Shift for ${users[i].firstName} ${users[i].lastName} (Week ${i})`,
           userId: users[i]._id,
@@ -59,16 +62,19 @@ const createPlanning = async (req, res) => {
           totalTime: 7 * 24 // Total hours in a week
         });
         shifts.push(shift);
-
+        
         currentStartDate = new Date(currentEndDate); // Move to the next week
       }
     }
 
+    console.log(shifts);
+    
+    
     const savedShifts = await DutyShift.insertMany(shifts);
-
+    
     serviceCenter.planning.push(...savedShifts.map(shift => shift._id));
     await serviceCenter.save();
-
+    
     res.status(201).json({ message: "Planning created successfully", shifts: savedShifts });
   } catch (error) {
     console.error(error);

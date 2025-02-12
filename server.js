@@ -9,13 +9,19 @@ const allowedOrigins = [
 
 
 require("dotenv").config();
-console.log("✅ Loaded ENV:", process.env);
 
 const express = require("express");
 const connectDB = require("./config/db"); // Import MongoDB connection
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const corsOptions = {
+  credentials: true, // Permet l'envoi des cookies et des headers sécurisés
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  origin:["http://localhost:5173","https://localhost:5173"],
+  allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allows JSON content
+  
+};
 
 // Connexion to MongoDB
 connectDB();
@@ -23,31 +29,7 @@ connectDB();
 // Middleware JSON
 app.use(express.json());
 app.use(cookieParser());
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true, // Permet l'envoi des cookies et des headers sécurisés
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-};
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", req.headers.origin);
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
-
 app.use(cors(corsOptions));
-
-app.options("*", cors(corsOptions));
 
 // Route test
 app.get("/", (req, res) => {

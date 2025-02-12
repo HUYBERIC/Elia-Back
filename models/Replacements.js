@@ -9,4 +9,4 @@ const replacementsSchema = new mongoose.Schema({
   endTime: { type: Date },
 });
 
-module.exports = mongoose.model("replacements", replacementsSchema);
+module.exports = mongoose.model("Replacements", replacementsSchema);
