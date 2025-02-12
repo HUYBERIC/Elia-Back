@@ -68,6 +68,7 @@ const requestRoutes = require("./routes/requestsRoute");
 const replacementsRoutes = require("./routes/replacementsRoute");
 const notFoundRoute = require("./routes/notFoundRoute");
 
+
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/duties", DutyRoutes);

@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const DutyShiftSchema = new mongoose.Schema({
   title:{type:String},
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   ServiceCenter: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCenter" },
   startTime: {type:Date},
   endTime: {type:Date},
-  replacements: [{ type: mongoose.Schema.Types.ObjectId, ref: "replacements" }],
+  replacements: [{ type: mongoose.Schema.Types.ObjectId, ref: "Replacements" }],
   totalTime : Number
 });
 
