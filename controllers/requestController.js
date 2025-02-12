@@ -1,7 +1,6 @@
 const DutyShift = require("../models/DutyShift");
 const Requests = require("../models/Requests"); // Assure-toi que le nom du modèle est correct
-const Replacement = require("../models/Replacements"); // Assure-toi que le nom du modèle est correct
-const Replacements = require("../models/Replacements");
+const Replacement = require("../models/Replacements"); 
 
 // ✅ Créer une nouvelle requête
 const createRequest = async (req, res) => {
@@ -142,6 +141,19 @@ const acceptRequest = async (req, res) => {
 
     res.json({ message: "Request accepted and moved to calendar", shift });
   } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const getReplacements = async (req, res) => {
+  try {
+    const requests = await Replacement.find().populate("replacedUserId replacingUserId");
+    console.log(requests);
+    
+    res.json(requests);
+  } catch (error) {
+    console.log(error);
+
     res.status(400).json({ error: error.message });
   }
 };
