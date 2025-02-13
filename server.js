@@ -2,8 +2,7 @@ const cookieParser = require("cookie-parser");
 const cookie = require("cookie");
 const cors = require("cors");
 const allowedOrigins = [
-  "http://localhost:5173",  // Local front-end
-  "http://localhost:5174",  // Local front-end
+  "http://localhost:3000",  // Local front-end
   "https://elia-back.onrender.com", // Render link
   "https://eduty.vercel.app" // Vercel link
 ];
