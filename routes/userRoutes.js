@@ -6,12 +6,15 @@ const {
   logOutUser,
   getUsers,
   getUsersById,
-  updateUserById
+  updateUserById,
+  getOwnUserId
 } = require("../controllers/userController");
+const verifyToken = require("../middleware/authJWT");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/", getUsers);
+router.get("/getOwnUserId",verifyToken, getOwnUserId);
 router.get("/:id", getUsersById);
 router.put("/:id", updateUserById);
 router.post("/logout", logOutUser);

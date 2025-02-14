@@ -111,8 +111,6 @@ const getUsers = async (req, res) => {
   }
 };
 
-
-
 const logOutUser = async (req, res) => {
   try {
     res.clearCookie("token"); // Supprime le cookie JWT
@@ -150,6 +148,15 @@ const updateUserById = async (req, res) => {
   }
 };
 
+const getOwnUserId = async (req, res) => {
+  try {
+    const id = req.user.id;
+    res.json({ id });
+  } catch (error) {
+    res.json({ error });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -157,4 +164,5 @@ module.exports = {
   getUsersById,
   updateUserById,
   logOutUser,
+  getOwnUserId
 };
