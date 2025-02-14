@@ -78,7 +78,7 @@ const getRequests = async (req, res) => {
 // ✅ Récupérer uniquement les requêtes acceptées
 const getAcceptStatus = async (req, res) => {
   try {
-    const requests = await Requests.find({ status: "approved" }).populate("requesterId ");
+    const requests = await Requests.find({ status: "approved" }).populate("requesterId receiverId shift");
     res.json(requests);
   } catch (error) {
     res.status(400).json({ error: error.message });
