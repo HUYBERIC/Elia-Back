@@ -72,12 +72,15 @@ const loginUser = async (req, res) => {
       return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
 
+    console.log(user);
+
     // Vérifier le mot de passe
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       console.log("Mot de passe incorrect");
       return res.status(401).json({ message: "Mot de passe incorrect." });
     }
+    console.log(isPasswordValid);
 
     const token = jwt.sign(
       { id: user._id, username: user.username, lobbies: user.lobbies },
@@ -89,6 +92,7 @@ const loginUser = async (req, res) => {
       secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
       sameSite: "strict", // Protect against CSRF attacks
     });
+    console.log(token);
     res
       .status(200)
       .json({ message: " register Successful", success: true, token: token });
@@ -164,5 +168,5 @@ module.exports = {
   getUsersById,
   updateUserById,
   logOutUser,
-  getOwnUserId
+  getOwnUserId,
 };
