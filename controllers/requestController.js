@@ -6,7 +6,7 @@ const Replacement = require("../models/Replacements");
 const createRequest = async (req, res) => {
   try {
     const { emergencyLevel, startDate, endDate } = req.body;
-    console.log(req.body);
+        
 
     const startTime = new Date(startDate);
     const endTime = new Date(endDate);
@@ -26,18 +26,18 @@ const createRequest = async (req, res) => {
     });
 
     if (!shift) {
-      console.log("no shift found");
+          
       return res.status(404).json({ error: "No matching shift found" });
     }
 
     const shiftSegments = shift.segments.find(
       (el) => el.startTime < startUTC && el.endTime > endUTC
     );
-    console.log(shiftSegments); // if undefined = the shift is split segments and therefore has 2 users sharing that time
+        // if undefined = the shift is split segments and therefore has 2 users sharing that time
 
     const shiftId = shiftSegments.userId;
 
-    console.log(shiftId);
+        
 
     const newRequest = new Requests({
       requesterId: req.user.id,
@@ -55,7 +55,7 @@ const createRequest = async (req, res) => {
 
     res.json(newRequest);
   } catch (error) {
-    console.log(error);
+        
     res.status(400).json({ error: error.message });
   }
 };
@@ -75,7 +75,7 @@ const getRequests = async (req, res) => {
 
     res.json(requests);
   } catch (error) {
-    console.log(error);
+        
 
     res.status(400).json({ error: error.message });
   }

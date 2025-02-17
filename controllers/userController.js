@@ -26,11 +26,11 @@ const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
     });
-    console.log("💾 Saving user:", user);
+         
 
     await user.save();
 
-    console.log("✅ User saved successfully!");
+         
 
     const token = jwt.sign(
       {
@@ -64,18 +64,18 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ error: "no password or email provided" });
     }
 
-    console.log(req.body);
+         
 
     const user = await User.findOne({ email });
     if (!user) {
-      console.log("Utilisateur non trouvé");
+           
       return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
 
     // Vérifier le mot de passe
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      console.log("Mot de passe incorrect");
+           
       return res.status(401).json({ message: "Mot de passe incorrect." });
     }
 
@@ -138,7 +138,7 @@ const updateUserById = async (req, res) => {
     const id = req.params.id;
     const user = await User.updateOne({ _id: id }, req.body);
 
-    console.log(req.body);
+         
 
     res.status(200).json(user);
   } catch (error) {
