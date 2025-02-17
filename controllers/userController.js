@@ -97,6 +97,7 @@ const loginUser = async (req, res) => {
       .status(200)
       .json({ message: " register Successful", success: true, token: token });
   } catch (error) {
+    console.log(error)
     res
       .status(500)
       .json({ err: "erreur lors de la connexion", error });

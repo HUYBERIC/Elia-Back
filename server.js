@@ -49,6 +49,16 @@ app.use(cors(corsOptions));
 
 app.options("*", cors(corsOptions));
 
+// Debugg
+
+app.use((req, res, next) => {
+  console.log("➡️ Nouvelle requête:", req.method, req.url);
+  console.log("📡 Headers:", req.headers);
+  console.log("📦 Body reçu:", req.body);
+  next();
+});
+
+
 // Route test
 app.get("/", (req, res) => {
   res.send("🚀 Express server is on!");
