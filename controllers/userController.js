@@ -99,7 +99,7 @@ const loginUser = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ err: "erreur lors de la creation de profile", error });
+      .json({ err: "erreur lors de la connexion", error });
   }
 };
 
