@@ -1,29 +1,24 @@
 const cookieParser = require("cookie-parser");
-const cookie = require("cookie");
 const cors = require("cors");
-const allowedOrigins = [
-  "http://localhost:3000",  // Local front-end
-  "https://eduty-backend.torvalds.be/", // Back-end fetch
-  "https://eduty.vercel.app", // Vercel link
-  "https://captain.torvalds.be" // Caprover Link
-];
-
-
-require("dotenv").config();
-
 const express = require("express");
+require("dotenv").config();
 const connectDB = require("./config/db"); // Import MongoDB connection
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connexion to MongoDB
+// ✅ Connexion MongoDB
 connectDB();
 
-// Middleware JSON
-app.use(express.json());
-app.use(cookieParser());
+// ✅ Liste des origins autorisés
+const allowedOrigins = [
+  "http://localhost:3000",  
+  "https://eduty-backend.torvalds.be",
+  "https://eduty.vercel.app",
+  "https://captain.torvalds.be"
+];
 
+// ✅ Configuration CORS
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -32,44 +27,42 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true, // Permet l'envoi des cookies et des headers sécurisés
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 };
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", req.headers.origin);
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
-
+// 🔥 Appliquer CORS une seule fois
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Gérer le preflight
 
-app.options("*", cors(corsOptions));
+// ✅ Middleware JSON & Cookies
+app.use(express.json());
+app.use(cookieParser());
 
-// Debugg
-
+// ✅ Debug Request Logger
 app.use((req, res, next) => {
   console.log("➡️ Nouvelle requête:", req.method, req.url);
-  console.log("📡 Headers:", req.headers);
+  console.log("📡 Origin:", req.headers.origin);
   console.log("📦 Body reçu:", req.body);
   next();
 });
 
+// ✅ Vérification des preflight requests
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    console.log("⚡ OPTIONS request captée !");
+    return res.sendStatus(200);
+  }
+  next();
+});
 
-// Route test
+// ✅ Route de test
 app.get("/", (req, res) => {
   res.send("🚀 Express server is on!");
 });
 
-// Launch server
-app.listen(PORT, () => {
-  console.log(`🚀 Server launch on http://localhost:${PORT}`);
-});
-
-// Routes import
+// ✅ Routes import
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const DutyRoutes = require("./routes/DutyRoutes");
@@ -78,7 +71,7 @@ const requestRoutes = require("./routes/requestsRoute");
 const replacementsRoutes = require("./routes/replacementsRoute");
 const notFoundRoute = require("./routes/notFoundRoute");
 
-
+// ✅ Routes
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/duties", DutyRoutes);
@@ -86,3 +79,8 @@ app.use("/api/utils", utilsRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/replacements", replacementsRoutes);
 app.use("*", notFoundRoute);
+
+// ✅ Démarrage du serveur
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
