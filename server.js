@@ -4,7 +4,8 @@ const cors = require("cors");
 const allowedOrigins = [
   "http://localhost:3000",  // Local front-end
   "https://eduty-backend.torvalds.be/", // Back-end fetch
-  "https://eduty.vercel.app" // Vercel link
+  "https://eduty.vercel.app", // Vercel link
+  "https://captain.torvalds.be" // Caprover Link
 ];
 
 
