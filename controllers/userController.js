@@ -117,21 +117,6 @@ const getUsers = async (req, res) => {
   }
 };
 
-const getToken = async (req, res) => {
-  console.log("🍪 Cookies:")
-  try {
-    console.log(req.user.id);
-    const user = req.user.id;
-
-    
-    res.status(200).json({test:"test"});
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Erreur lors de la récupération des lobbies.", error });
-  }
-};
-
 
 
 const logOutUser = async (req, res) => {
@@ -187,5 +172,5 @@ module.exports = {
   getUsersById,
   updateUserById,
   logOutUser,
-  getToken
+  getOwnUserId
 };
