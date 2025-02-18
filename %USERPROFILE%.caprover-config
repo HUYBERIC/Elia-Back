@@ -1,0 +1,8 @@
+{
+  "servers": [
+    {
+      "name": "my-caprover",
+      "url": "https://captain.torvalds.be"
+    }
+  ]
+}

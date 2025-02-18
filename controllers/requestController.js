@@ -1,7 +1,6 @@
 const DutyShift = require("../models/DutyShift");
-const Requests = require("../models/Requests"); // Assure-toi que le nom du modèle est correct
-const Replacement = require("../models/Replacements"); // Assure-toi que le nom du modèle est correct
-const Replacements = require("../models/Replacements");
+const Requests = require("../models/Requests");
+const Replacement = require("../models/Replacements");
 
 // ✅ Créer une nouvelle requête
 const createRequest = async (req, res) => {
@@ -28,14 +27,21 @@ const createRequest = async (req, res) => {
 
     if (!shift) {
       console.log("no shift found");
-
       return res.status(404).json({ error: "No matching shift found" });
     }
 
-    console.log(shift);
+    const shiftSegments = shift.segments.find(
+      (el) => el.startTime < startUTC && el.endTime > endUTC
+    );
+    console.log(shiftSegments); // if undefined = the shift is split segments and therefore has 2 users sharing that time
+
+    const shiftId = shiftSegments.userId;
+
+    console.log(shiftId);
 
     const newRequest = new Requests({
       requesterId: req.user.id,
+      receiverId: null,
       shift: shift,
       status: "pending",
       emergencyLevel,
@@ -54,10 +60,18 @@ const createRequest = async (req, res) => {
   }
 };
 
-// ✅ Récupérer toutes les requêtes
+// ✅ Récupérer toutes les requêtes et supprimer celles qui sont dépassées
 const getRequests = async (req, res) => {
   try {
-    const requests = await Requests.find().populate("requesterId"); // Correction : Utilisation de `Requests` au lieu de `Request`
+    const now = new Date(); // Date actuelle pour comparer avec startTime
+
+    // Supprimer les requêtes "pending" dont la startTime est passée
+    await Requests.deleteMany({
+      status: "pending", // Si le statut est toujours "pending"
+      askedStartTime: { $lt: now }, // Si la startTime est passée (moins que la date actuelle)
+    });
+
+    const requests = await Requests.find().populate("requesterId");
 
     res.json(requests);
   } catch (error) {
@@ -70,7 +84,9 @@ const getRequests = async (req, res) => {
 // ✅ Récupérer uniquement les requêtes acceptées
 const getAcceptStatus = async (req, res) => {
   try {
-    const requests = await Requests.find({ status: "accepted" });
+    const requests = await Requests.find({ status: "approved" }).populate(
+      "requesterId receiverId shift"
+    );
     res.json(requests);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -80,7 +96,9 @@ const getAcceptStatus = async (req, res) => {
 // ✅ Récupérer uniquement les requêtes en attente
 const getPendingRequests = async (req, res) => {
   try {
-    const requests = await Requests.find({ status: "pending" });
+    const requests = await Requests.find({ status: "pending" }).populate(
+      "requesterId"
+    );
     res.json(requests);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -89,9 +107,9 @@ const getPendingRequests = async (req, res) => {
 
 const acceptRequest = async (req, res) => {
   try {
-    const { id } = req.params; // Récupération de l'ID de la requête via les paramètres
+    const { id } = req.params; // ID de la requête
     const receiverId = req.user.id; // L'utilisateur qui accepte la requête
-    console.log("Request canceled: User tried to replace themselves.");
+
     const request = await Requests.findById(id);
     if (!request) {
       return res.status(404).json({ error: "Request not found" });
@@ -99,63 +117,87 @@ const acceptRequest = async (req, res) => {
 
     // Vérifier si l'utilisateur tente de se remplacer lui-même
     if (request.requesterId.toString() === receiverId) {
-      // Annuler la demande de remplacement
       await Requests.findByIdAndDelete(id);
-      console.log("Request canceled: User tried to replace themselves.");
-      return res.json({ message: "Replacement request canceled as the user is the same." });
+      return res.json({
+        message: "Replacement request canceled as the user is the same.",
+      });
     }
-
-    request.status = "approved";
     request.receiverId = receiverId;
-    await request.save();
-
-    // Trouver le shift correspondant
+    request.status = "approved";
+    request.save();
     const shift = await DutyShift.findById(request.shift);
     if (!shift) {
-      
       return res.status(404).json({ error: "Shift not found" });
     }
 
-    if (!shift.replacements) shift.replacements = [];
+    const askedStartTime = new Date(request.askedStartTime);
+    const askedEndTime = new Date(request.askedEndTime);
 
-    // Créer un nouvel enregistrement de remplacement
-    const newReplacement = new Replacement({
-      replacedUserId: request.requesterId,
-      replacingUserId: receiverId,
-      serviceCenter: shift.ServiceCenter,
-      startTime: request.askedStartTime,
-      endTime: request.askedEndTime,
-      status: request.status,
-    });
+    let updatedSegments = [];
+    let replacementAdded = false;
 
-    await newReplacement.save();
+    for (let segment of shift.segments) {
+      const segmentStart = new Date(segment.startTime);
+      const segmentEnd = new Date(segment.endTime);
 
-    shift.replacements.push(newReplacement);
+      if (askedStartTime >= segmentStart && askedEndTime <= segmentEnd) {
+        if (askedStartTime > segmentStart) {
+          updatedSegments.push({
+            userId: segment.userId,
+            startTime: segmentStart,
+            endTime: askedStartTime,
+            totalTime: Math.round((askedStartTime - segmentStart) / 3600000),
+          });
+        }
 
-    console.log(shift);
+        updatedSegments.push({
+          userId: receiverId,
+          startTime: askedStartTime,
+          endTime: askedEndTime,
+          totalTime: Math.round((askedEndTime - askedStartTime) / 3600000),
+        });
 
-    shift.replacements.push(newReplacement);
+        replacementAdded = true;
+
+        if (askedEndTime < segmentEnd) {
+          updatedSegments.push({
+            userId: segment.userId,
+            startTime: askedEndTime,
+            endTime: segmentEnd,
+            totalTime: Math.round((segmentEnd - askedEndTime) / 3600000),
+          });
+        }
+      } else {
+        updatedSegments.push(segment);
+      }
+    }
+
+    if (!replacementAdded) {
+      return res
+        .status(400)
+        .json({ error: "Replacement period does not match any shift" });
+    }
+
+    shift.segments = updatedSegments;
     await shift.save();
+    /* await Requests.findByIdAndDelete(id); */
 
-    // Supprimer la requête acceptée pour ne plus l'afficher dans la liste
-    await Requests.findByIdAndDelete(id);
-
-    res.json({ message: "Request accepted and moved to calendar", shift });
+    res.json({ message: "Request accepted and updated in the shift", shift });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
-const getReplacements = async (req, res) => {
+const deleteRequest = async (req, res) => {
   try {
-    const requests = await Replacements.find().populate("replacedUserId replacingUserId");
-    console.log(requests);
-    
-    res.json(requests);
+    const paramId = req.params.id;
+    await Requests.findByIdAndDelete(paramId);
+    res.json({
+      message: "succesfully deleted",
+    });
   } catch (error) {
-    console.log(error);
-
-    res.status(400).json({ error: error.message });
+    res.json({ message: "something went wrong", error });
   }
 };
 
@@ -165,5 +207,5 @@ module.exports = {
   getAcceptStatus,
   getPendingRequests,
   acceptRequest,
-  getReplacements,
+  deleteRequest
 };

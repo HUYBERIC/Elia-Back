@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 
+// Dégager les trucs google
+
 const registerUser = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
@@ -166,6 +168,15 @@ const updateUserById = async (req, res) => {
     res
       .status(500)
       .json({ message: "Erreur lors de la récupération des lobbies.", error });
+  }
+};
+
+const getOwnUserId = async (req, res) => {
+  try {
+    const id = req.user.id;
+    res.json({ id });
+  } catch (error) {
+    res.json({ error });
   }
 };
 
