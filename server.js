@@ -12,10 +12,10 @@ connectDB();
 
 // ✅ Liste des origins autorisés
 const allowedOrigins = [
-  "http://localhost:3000",  
+  "http://localhost:3000",
   "https://eduty-backend.torvalds.be",
   "https://eduty.vercel.app",
-  "https://captain.torvalds.be"
+  "https://captain.torvalds.be",
 ];
 
 // ✅ Configuration CORS
@@ -29,7 +29,7 @@ const corsOptions = {
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 // 🔥 Appliquer CORS une seule fois
@@ -45,6 +45,8 @@ app.use((req, res, next) => {
   console.log("➡️ Nouvelle requête:", req.method, req.url);
   console.log("📡 Origin:", req.headers.origin);
   console.log("📦 Body reçu:", req.body);
+  console.log("rico");
+
   next();
 });
 
