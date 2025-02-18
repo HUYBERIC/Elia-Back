@@ -6,11 +6,7 @@ const {
   createPlanning
 } = require("../controllers/utilsController");
 
-
 router.post("/createSC",verifyToken, createSC);
-
-
 router.post("/create-planning", createPlanning);
-
 
 module.exports = router;
