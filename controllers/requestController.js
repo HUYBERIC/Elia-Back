@@ -93,17 +93,27 @@ const getAcceptStatus = async (req, res) => {
   }
 };
 
-// ✅ Récupérer uniquement les requêtes en attente
 const getPendingRequests = async (req, res) => {
   try {
-    const requests = await Requests.find({ status: "pending" }).populate(
-      "requesterId"
-    );
+    const now = new Date(); // Date actuelle pour comparer avec askedStartTime
+    console.log("Current Date and Time: ", now);
+
+    // Supprimer les requêtes "pending" dont askedStartTime est dépassée de plus de 24 heures
+    const result = await Requests.deleteMany({
+      status: "pending", // Requêtes avec statut "pending"
+      askedStartTime: { $lt: new Date(now - 24 * 60 * 60 * 1000) }, // Requêtes dont askedStartTime est supérieur à 24h avant maintenant
+    });
+    console.log("Delete result: ", result);
+
+    // Récupérer les requêtes "pending" restantes
+    const requests = await Requests.find({ status: "pending" }).populate("requesterId");
+
     res.json(requests);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 const acceptRequest = async (req, res) => {
   try {
