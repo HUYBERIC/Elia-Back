@@ -61,15 +61,14 @@ const createRequest = async (req, res) => {
 };
 
 // ✅ Récupérer toutes les requêtes et supprimer celles qui sont dépassées
-// ✅ Récupérer toutes les requêtes et supprimer celles qui sont dépassées
 const getRequests = async (req, res) => {
   try {
-    const now = new Date(); // Date actuelle pour comparer avec askedEndTime
+    const now = new Date(); // Date actuelle pour comparer avec startTime
 
-    // Supprimer les requêtes "pending" dont la askedEndTime est passée
+    // Supprimer les requêtes "pending" dont la startTime est passée
     await Requests.deleteMany({
       status: "pending", // Si le statut est toujours "pending"
-      askedEndTime: { $lt: now }, // Si la askedEndTime est passée (moins que la date actuelle)
+      askedStartTime: { $lt: now }, // Si la startTime est passée (moins que la date actuelle)
     });
 
     const requests = await Requests.find().populate("requesterId");
@@ -81,7 +80,6 @@ const getRequests = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 
 // ✅ Récupérer uniquement les requêtes acceptées
 const getAcceptStatus = async (req, res) => {
