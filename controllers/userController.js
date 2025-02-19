@@ -72,12 +72,15 @@ const loginUser = async (req, res) => {
       return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
 
+    console.log(user);
+
     // Vérifier le mot de passe
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
            
       return res.status(401).json({ message: "Mot de passe incorrect." });
     }
+    console.log(isPasswordValid);
 
     const token = jwt.sign(
       { id: user._id, username: user.username, lobbies: user.lobbies },
@@ -86,20 +89,18 @@ const loginUser = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
-      secure: true, // Only send over HTTPS in production
-      sameSite: "false", // Protect against CSRF attacks
-      path: "/",
+      secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
+      sameSite: "None", // Protect against CSRF attacks
     });
-
-    console.log("✅ Cookie envoyé:", res.getHeaders()["set-cookie"]);
-
+    console.log(token);
     res
       .status(200)
       .json({ message: " login Successful", success: true, token: token });
   } catch (error) {
+    console.log(error)
     res
       .status(500)
-      .json({ err: "erreur lors de la creation de profile", error });
+      .json({ err: "erreur lors de la connexion", error });
   }
 };
 
@@ -172,5 +173,5 @@ module.exports = {
   getUsersById,
   updateUserById,
   logOutUser,
-  getOwnUserId
+  getOwnUserId,
 };
