@@ -2,7 +2,8 @@ const cookieParser = require("cookie-parser");
 const cookie = require("cookie");
 const cors = require("cors");
 const allowedOrigins = [
-  "http://localhost:3000",  // Local front-end
+  "http://localhost:5173",  // Local front-end
+  "https://elia-back-et5at9thc-huyberics-projects.vercel.app/", // Vercel back-end
   "https://elia-back.onrender.com", // Render link
   "https://eduty.vercel.app" // Vercel link
 ];
@@ -36,13 +37,13 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"]
 };
 
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", req.headers.origin);
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
-});
+}); */
 
 app.use(cors(corsOptions));
 
@@ -75,3 +76,6 @@ app.use("/api/utils", utilsRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/replacements", replacementsRoutes);
 app.use("*", notFoundRoute);
+
+// Export for vercel
+/* module.exports = app; */
