@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   phone:{type:Number},
+  role:{type: String, enum: ["user", "admin"], default:"user" },
   serviceCenter: { 
     serviceCenterId: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCenter" },
     serviceCenter: { type: String }

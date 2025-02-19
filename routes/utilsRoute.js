@@ -7,6 +7,6 @@ const {
 } = require("../controllers/utilsController");
 
 router.post("/createSC",verifyToken, createSC);
-router.post("/create-planning", createPlanning);
+router.post("/create-planning",verifyToken, createPlanning);
 
 module.exports = router;

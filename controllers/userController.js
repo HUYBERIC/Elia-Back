@@ -83,7 +83,12 @@ const loginUser = async (req, res) => {
     console.log(isPasswordValid);
 
     const token = jwt.sign(
-      { id: user._id, username: user.username, lobbies: user.lobbies },
+      {
+        id: user._id,
+        username: user.username,
+        lobbies: user.lobbies,
+        role: user.role,
+      },
       process.env.JWT_SECRET
     );
 
@@ -97,10 +102,8 @@ const loginUser = async (req, res) => {
       .status(200)
       .json({ message: " register Successful", success: true, token: token });
   } catch (error) {
-    console.log(error)
-    res
-      .status(500)
-      .json({ err: "erreur lors de la connexion", error });
+    console.log(error);
+    res.status(500).json({ err: "erreur lors de la connexion", error });
   }
 };
 
@@ -142,8 +145,6 @@ const updateUserById = async (req, res) => {
   try {
     const id = req.params.id;
     const user = await User.updateOne({ _id: id }, req.body);
-
-    console.log(req.body);
 
     res.status(200).json(user);
   } catch (error) {

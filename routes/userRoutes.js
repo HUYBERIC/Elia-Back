@@ -9,7 +9,6 @@ const {
   updateUserById,
   getOwnUserId
 } = require("../controllers/userController");
-const verifyToken = require("../middleware/authJWT");
 
 //POST REQUESTS
 router.post("/register", registerUser);

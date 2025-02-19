@@ -22,11 +22,15 @@ const createSC = async (req, res) => {
   }
 };
 
-
-
 const createPlanning = async (req, res) => {
   try {
     const { serviceCenterId, startDate, repeatWeeks = 1 } = req.body;
+
+    console.log(req.user);
+    if(req.user.role != "admin")
+    {
+      return res.status(400).json({message:"you cannot create a planning as a user"})
+    }
 
     if (!serviceCenterId || !startDate) {
       return res.status(400).json({ message: "Missing required fields." });
