@@ -141,7 +141,7 @@ const acceptRequest = async (req, res) => {
       const segmentEnd = new Date(segment.endTime);
 
       if (askedStartTime >= segmentStart && askedEndTime <= segmentEnd) {
-        if (askedStartTime > segmentStart) {
+        if (askedStartTime.getTime() > segmentStart.getTime()) {
           updatedSegments.push({
             userId: segment.userId,
             startTime: segmentStart,
@@ -159,7 +159,7 @@ const acceptRequest = async (req, res) => {
 
         replacementAdded = true;
 
-        if (askedEndTime < segmentEnd) {
+        if (askedEndTime.getTime() < segmentEnd.getTime()) {
           updatedSegments.push({
             userId: segment.userId,
             startTime: askedEndTime,
