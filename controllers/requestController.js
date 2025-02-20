@@ -6,7 +6,6 @@ const Replacement = require("../models/Replacements");
 const createRequest = async (req, res) => {
   try {
     const { emergencyLevel, startDate, endDate } = req.body;
-    console.log(req.body);
 
     const startTime = new Date(startDate);
     const endTime = new Date(endDate);
@@ -33,11 +32,15 @@ const createRequest = async (req, res) => {
     const shiftSegments = shift.segments.find(
       (el) => el.startTime < startUTC && el.endTime > endUTC
     );
-    console.log(shiftSegments); // if undefined = the shift is split segments and therefore has 2 users sharing that time
 
-    const shiftId = shiftSegments.userId;
-
-    console.log(shiftId);
+    if (!shiftSegments || shiftSegments.userId.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({
+          message:
+            "you are trying to ask for a switch on a shift that isnt yours",
+        });
+    }
 
     const newRequest = new Requests({
       requesterId: req.user.id,
@@ -133,6 +136,23 @@ const acceptRequest = async (req, res) => {
     const askedStartTime = new Date(request.askedStartTime);
     const askedEndTime = new Date(request.askedEndTime);
 
+    // Check if the times are already set to 00:00:00 and force them to be exactly 00:00 UTC
+    if (
+      askedStartTime.getHours() === 0 &&
+      askedStartTime.getMinutes() === 0 &&
+      askedStartTime.getSeconds() === 0
+    ) {
+      askedStartTime.setHours(0, 0, 0, 0); // Forces to 00:00:00.000
+    }
+
+    if (
+      askedEndTime.getHours() === 0 &&
+      askedEndTime.getMinutes() === 0 &&
+      askedEndTime.getSeconds() === 0
+    ) {
+      askedEndTime.setHours(0, 0, 0, 0); // Forces to 00:00:00.000
+    }
+
     let updatedSegments = [];
     let replacementAdded = false;
 
@@ -207,5 +227,5 @@ module.exports = {
   getAcceptStatus,
   getPendingRequests,
   acceptRequest,
-  deleteRequest
+  deleteRequest,
 };
