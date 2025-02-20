@@ -6,6 +6,7 @@ const cookie = require("cookie");
 const registerUser = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
+
     if (!email || !password) {
       return res.status(401).json({ error: "No password or email provided" });
     }
@@ -23,6 +24,7 @@ const registerUser = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
+      role: "user",
     });
     console.log("💾 Saving user:", user);
 
