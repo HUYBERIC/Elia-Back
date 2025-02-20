@@ -5,16 +5,14 @@ const createSC = async (req, res) => {
   const userid = req.user.id;
   try {
     const { name, description, location } = req.body;
-
-    // Create a new ServiceCenter document
+    
     const newServiceCenter = new ServiceCenter({
       name,
       description,
       location,
-      users: [userid], // Must be an array of ObjectIds
+      users: [userid],
     });
-
-    // Save to MongoDB
+    
     await newServiceCenter.save();
     res.status(201).json(newServiceCenter);
   } catch (error) {
@@ -29,7 +27,7 @@ const createPlanning = async (req, res) => {
     console.log(req.user);
     if(req.user.role != "admin")
     {
-      return res.status(400).json({message:"you cannot create a planning as a user"})
+      return res.status(400).json({message:"You cannot create a planning as a user"})
     }
 
     if (!serviceCenterId || !startDate) {
@@ -49,18 +47,17 @@ const createPlanning = async (req, res) => {
     let shifts = [];
     let currentStartDate = new Date(startDate);
 
-    for (let cycle = 0; cycle < repeatWeeks; cycle++) { // Répéter sur plusieurs semaines
+    for (let cycle = 0; cycle < repeatWeeks; cycle++) {
       for (let i = 0; i < users.length; i++) {
         let currentEndDate = new Date(currentStartDate);
-        currentEndDate.setDate(currentEndDate.getDate() + 7); // Shift d'une semaine
-
-        // Créer le shift global
+        currentEndDate.setDate(currentEndDate.getDate() + 7);
+       
         const shift = new DutyShift({
           title: `Planning - Week ${i + 1}`,
           serviceCenter: serviceCenterId,
           startTime: new Date(currentStartDate),
           endTime: new Date(currentEndDate),
-          totalTime: 7 * 24, // Nombre total d'heures dans une semaine
+          totalTime: 7 * 24,
           mainUserId: users[i]._id,
           segments: [
             {
@@ -73,14 +70,12 @@ const createPlanning = async (req, res) => {
         });
 
         shifts.push(shift);
-        currentStartDate = new Date(currentEndDate); // Passer à la semaine suivante
+        currentStartDate = new Date(currentEndDate);
       }
     }
-
-    // Sauvegarde des shifts créés
+    
     const savedShifts = await DutyShift.insertMany(shifts);
-
-    // Ajouter les shifts au planning du Service Center
+    
     serviceCenter.planning.push(...savedShifts.map(shift => shift._id));
     await serviceCenter.save();
 

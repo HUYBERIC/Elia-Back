@@ -1,16 +1,16 @@
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
-  const token = req.cookies.token; // Extract JWT from cookies
+  const token = req.cookies.token;
 
   console.log(req.cookies);
 
-  console.log("Token extrait des cookies:", token);
+  console.log("Token extracted from cookies:", token);
 
   if (!token) {
     return res
       .status(403)
-      .json({ message: "Un token est requis pour accéder à cette ressource." });
+      .json({ message: "A token is required to access this resource." });
   }
 
   try {
@@ -19,8 +19,8 @@ const verifyToken = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    console.error("Erreur lors de la validation du token:", error.message);
-    return res.status(401).json({ message: "Token invalide." });
+    console.error("Error while validating token:", error.message);
+    return res.status(401).json({ message: "Token not valid." });
   }
 };
 

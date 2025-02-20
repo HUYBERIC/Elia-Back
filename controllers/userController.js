@@ -3,8 +3,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 
-// Dégager les trucs google
-
 const registerUser = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
@@ -40,19 +38,19 @@ const registerUser = async (req, res) => {
     );
 
     res.cookie("token", token, {
-      httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
-      secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
-      sameSite: "none", // Protect against CSRF attacks
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
     });
 
     res
       .status(200)
-      .json({ message: " register Successful", success: true, token: token });
+      .json({ message: " register successful.", success: true, token: token });
   } catch (error) {
-    console.error("❌ Registration error:", error);
+    console.error("❌ Registration failed:", error);
     res
       .status(500)
-      .json({ err: "erreur lors de la creation de profile", error });
+      .json({ err: "Error while creating profile.", error });
   }
 };
 
@@ -61,24 +59,23 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(401).json({ error: "no password or email provided" });
+      return res.status(401).json({ error: "No password or email provided" });
     }
 
     console.log(req.body);
 
     const user = await User.findOne({ email });
     if (!user) {
-      console.log("Utilisateur non trouvé");
-      return res.status(404).json({ message: "Utilisateur non trouvé." });
+      console.log("User not found");
+      return res.status(404).json({ message: "User not found." });
     }
 
     console.log(user);
-
-    // Vérifier le mot de passe
+    
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      console.log("Mot de passe incorrect");
-      return res.status(401).json({ message: "Mot de passe incorrect." });
+      console.log("Incorrect password.");
+      return res.status(401).json({ message: "Incorrect password." });
     }
     console.log(isPasswordValid);
 
@@ -93,9 +90,9 @@ const loginUser = async (req, res) => {
     );
 
     res.cookie("token", token, {
-      httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
-      secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
-      sameSite: "None", // Protect against CSRF attacks
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
     });
     console.log(token);
     res
@@ -103,7 +100,7 @@ const loginUser = async (req, res) => {
       .json({ message: " register Successful", success: true, token: token });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ err: "erreur lors de la connexion", error });
+    res.status(500).json({ err: "Error while logging in.", error });
   }
 };
 
@@ -115,16 +112,16 @@ const getUsers = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Erreur lors de la récupération des lobbies.", error });
+      .json({ message: "Error while fetching lobbies.", error });
   }
 };
 
 const logOutUser = async (req, res) => {
   try {
     res.clearCookie("token"); // Supprime le cookie JWT
-    res.status(200).json({ message: "Déconnexion réussie" });
+    res.status(200).json({ message: "Disconnected successfully." });
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la déconnexion", error });
+    res.status(500).json({ message: "Error while disconnecting.", error });
   }
 };
 
@@ -137,7 +134,7 @@ const getUsersById = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Erreur lors de la récupération des lobbies.", error });
+      .json({ message: "Error while fetching lobbies.", error });
   }
 };
 
@@ -150,7 +147,7 @@ const updateUserById = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Erreur lors de la récupération des lobbies.", error });
+      .json({ message: "Error while fetching lobbies.", error });
   }
 };
 

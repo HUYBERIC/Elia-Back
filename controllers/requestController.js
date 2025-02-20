@@ -2,7 +2,6 @@ const DutyShift = require("../models/DutyShift");
 const Requests = require("../models/Requests");
 const Replacement = require("../models/Replacements");
 
-// ✅ Créer une nouvelle requête
 const createRequest = async (req, res) => {
   try {
     const { emergencyLevel, startDate, endDate } = req.body;
@@ -10,11 +9,10 @@ const createRequest = async (req, res) => {
     const startTime = new Date(startDate);
     const endTime = new Date(endDate);
 
-    // Ensure the format is consistent
     const startUTC = new Date(startTime.toISOString());
     const endUTC = new Date(endTime.toISOString());
 
-    console.log("Recherche de shift avec : ", {
+    console.log("Looking for shifts with : ", {
       startTime: { $lte: startUTC },
       endTime: { $gte: endUTC },
     });
@@ -25,7 +23,7 @@ const createRequest = async (req, res) => {
     });
 
     if (!shift) {
-      console.log("no shift found");
+      console.log("No shift found");
       return res.status(404).json({ error: "No matching shift found" });
     }
 
@@ -34,12 +32,10 @@ const createRequest = async (req, res) => {
     );
 
     if (!shiftSegments || shiftSegments.userId.toString() !== req.user.id) {
-      return res
-        .status(403)
-        .json({
-          message:
-            "you are trying to ask for a switch on a shift that isnt yours",
-        });
+      return res.status(403).json({
+        message:
+          "You're requesting a shift outside of your own duty hours.",
+      });
     }
 
     const newRequest = new Requests({
@@ -63,15 +59,13 @@ const createRequest = async (req, res) => {
   }
 };
 
-// ✅ Récupérer toutes les requêtes et supprimer celles qui sont dépassées
 const getRequests = async (req, res) => {
   try {
-    const now = new Date(); // Date actuelle pour comparer avec startTime
-
-    // Supprimer les requêtes "pending" dont la startTime est passée
+    const now = new Date();
+    
     await Requests.deleteMany({
-      status: "pending", // Si le statut est toujours "pending"
-      askedStartTime: { $lt: now }, // Si la startTime est passée (moins que la date actuelle)
+      status: "pending",
+      askedStartTime: { $lt: now },
     });
 
     const requests = await Requests.find().populate("requesterId");
@@ -84,7 +78,6 @@ const getRequests = async (req, res) => {
   }
 };
 
-// ✅ Récupérer uniquement les requêtes acceptées
 const getAcceptStatus = async (req, res) => {
   try {
     const requests = await Requests.find({ status: "approved" }).populate(
@@ -98,18 +91,18 @@ const getAcceptStatus = async (req, res) => {
 
 const getPendingRequests = async (req, res) => {
   try {
-    const now = new Date(); // Date actuelle pour comparer avec askedStartTime
+    const now = new Date();
     console.log("Current Date and Time: ", now);
-
-    // Supprimer les requêtes "pending" dont askedStartTime est dépassée de plus de 24 heures
+    
     const result = await Requests.deleteMany({
-      status: "pending", // Requêtes avec statut "pending"
-      askedStartTime: { $lt: new Date(now - 24 * 60 * 60 * 1000) }, // Requêtes dont askedStartTime est supérieur à 24h avant maintenant
+      status: "pending",
+      askedStartTime: { $lt: new Date(now - 24 * 60 * 60 * 1000) },
     });
     console.log("Delete result: ", result);
-
-    // Récupérer les requêtes "pending" restantes
-    const requests = await Requests.find({ status: "pending" }).populate("requesterId");
+    
+    const requests = await Requests.find({ status: "pending" }).populate(
+      "requesterId"
+    );
 
     res.json(requests);
   } catch (error) {
@@ -117,22 +110,20 @@ const getPendingRequests = async (req, res) => {
   }
 };
 
-
 const acceptRequest = async (req, res) => {
   try {
-    const { id } = req.params; // ID de la requête
-    const receiverId = req.user.id; // L'utilisateur qui accepte la requête
+    const { id } = req.params;
+    const receiverId = req.user.id;
 
     const request = await Requests.findById(id);
     if (!request) {
       return res.status(404).json({ error: "Request not found" });
     }
-
-    // Vérifier si l'utilisateur tente de se remplacer lui-même
+    
     if (request.requesterId.toString() === receiverId) {
       await Requests.findByIdAndDelete(id);
       return res.json({
-        message: "Replacement request canceled as the user is the same.",
+        message: "Replacement request canceled by requesting user.",
       });
     }
     request.receiverId = receiverId;
@@ -145,14 +136,13 @@ const acceptRequest = async (req, res) => {
 
     const askedStartTime = new Date(request.askedStartTime);
     const askedEndTime = new Date(request.askedEndTime);
-
-    // Check if the times are already set to 00:00:00 and force them to be exactly 00:00 UTC
+    
     if (
       askedStartTime.getHours() === 0 &&
       askedStartTime.getMinutes() === 0 &&
       askedStartTime.getSeconds() === 0
     ) {
-      askedStartTime.setHours(0, 0, 0, 0); // Forces to 00:00:00.000
+      askedStartTime.setHours(0, 0, 0, 0);
     }
 
     if (
@@ -160,7 +150,7 @@ const acceptRequest = async (req, res) => {
       askedEndTime.getMinutes() === 0 &&
       askedEndTime.getSeconds() === 0
     ) {
-      askedEndTime.setHours(0, 0, 0, 0); // Forces to 00:00:00.000
+      askedEndTime.setHours(0, 0, 0, 0);
     }
 
     let updatedSegments = [];
@@ -205,14 +195,14 @@ const acceptRequest = async (req, res) => {
     if (!replacementAdded) {
       return res
         .status(400)
-        .json({ error: "Replacement period does not match any shift" });
+        .json({ error: "Replacement period does not match any existing shift." });
     }
 
     shift.segments = updatedSegments;
     await shift.save();
     /* await Requests.findByIdAndDelete(id); */
 
-    res.json({ message: "Request accepted and updated in the shift", shift });
+    res.json({ message: "Request accepted and updated within the shift", shift });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
@@ -224,10 +214,10 @@ const deleteRequest = async (req, res) => {
     const paramId = req.params.id;
     await Requests.findByIdAndDelete(paramId);
     res.json({
-      message: "succesfully deleted",
+      message: "Request succesfully deleted.",
     });
   } catch (error) {
-    res.json({ message: "something went wrong", error });
+    res.json({ message: "Error while deleting request.", error });
   }
 };
 

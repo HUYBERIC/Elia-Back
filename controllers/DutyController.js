@@ -4,7 +4,7 @@ const getDuties = async (req, res) => {
   try {
     const duties = await Duty.find()
       .populate({
-        path: "segments.userId", // Peuple les utilisateurs assignés à chaque segment
+        path: "segments.userId",
         model: "User",
         select: "firstName lastName email",
       });
@@ -12,7 +12,7 @@ const getDuties = async (req, res) => {
     res.status(200).json(
       duties.map((duty) => ({
         id: duty._id,
-        title: duty.title || "Sans titre",
+        title: duty.title || "Untitled",
         serviceCenter: duty.serviceCenter,
         start: duty.startTime,
         end: duty.endTime,
@@ -27,7 +27,7 @@ const getDuties = async (req, res) => {
                 lastName: segment.userId.lastName,
                 email: segment.userId.email,
               }
-            : null, // Gérer le cas où l'utilisateur n'existe plus
+            : null,
           startTime: segment.startTime,
           endTime: segment.endTime,
           totalTime: segment.totalTime,
@@ -36,7 +36,7 @@ const getDuties = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    res.status(500).send("Erreur lors de la récupération des gardes");
+    res.status(500).send("Error while getting duties.");
   }
 };
 
@@ -45,7 +45,7 @@ const addDuty = async (req, res) => {
   try {
     const { title, startTime, endTime, userId } = req.body;
 
-    const totalTime = Math.round((new Date(endTime) - new Date(startTime)) / 3600000); // Convertir ms en heures
+    const totalTime = Math.round((new Date(endTime) - new Date(startTime)) / 3600000);
 
     const duty = new Duty({
       title,
@@ -66,7 +66,7 @@ const addDuty = async (req, res) => {
     res.status(200).json(duty);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Erreur lors de l'ajout de la garde");
+    res.status(500).send("Error while adding duty.");
   }
 };
 
@@ -76,7 +76,7 @@ const updateDuty = async (req, res) => {
     const duty = await Duty.findById(req.params.id);
 
     if (!duty) {
-      return res.status(404).json({ message: "Garde non trouvée" });
+      return res.status(404).json({ message: "Duty shift not found." });
     }
 
     if (title) duty.title = title;
@@ -96,7 +96,7 @@ const updateDuty = async (req, res) => {
     res.json(duty);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Erreur lors de la modification de la garde");
+    res.status(500).send("Error while updating duty shift.");
   }
 };
 
@@ -104,11 +104,11 @@ const deleteDuty = async (req, res) => {
   try {
     const duty = await Duty.findByIdAndDelete(req.params.id);
     if (!duty) {
-      return res.status(404).json({ message: "Garde non trouvée" });
+      return res.status(404).json({ message: "Duty shift not found." });
     }
     res.json({ message: "Suppression réussie", duty });
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la suppression de la garde", error });
+    res.status(500).json({ message: "Error while deleting duty.", error });
   }
 };
 
